@@ -32,6 +32,8 @@ namespace _800mm_tracking
             */
 
             { "Ace_800mmTorpedoStrike", new PhoenixMissileDef("Ace_800mmTorpedoStrike", 1000, 60, 0.2f) },
+            { "Ace_220mmBurstMissile_HV", new PhoenixMissileDef("Ace_220mmBurstMissile_HV", 50, 60, 1f) },
+            
         };
 
         //The missile Class definition
