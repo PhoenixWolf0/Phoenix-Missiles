@@ -199,6 +199,7 @@ namespace _800mm_tracking
                     
                     direction = Vector3.Transform(direction, rotationMatrix);
                     direction.Normalize();
+                    target = null;
                 }
             } //End public void UpdateDirectionNoPrediction()
 
