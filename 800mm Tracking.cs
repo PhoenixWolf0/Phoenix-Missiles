@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Sandbox.Definitions;
 using Sandbox.Game.Entities;
@@ -237,7 +237,7 @@ namespace _800mm_tracking
             if (MissileStats.TryGetValue("Ace_800mmTorpedoStrike", out missileDef) && missileDef != null)
             {
                 missile.Synchronized = true;
-                missileGuiders.Add(missile.EntityId, new MissileGuider(missile, MissileStats[missile.AmmoDefinition.Id.SubtypeName]));
+                missileGuiders.Add(missile.EntityId, new MissileGuider(missile, missileDef));
             }
         }
 
