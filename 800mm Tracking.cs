@@ -80,7 +80,7 @@ namespace _800mm_tracking
 
                 position = this.missile.GetPosition();
 
-                MissileStats = MissileStats_;
+                this.MissileStats = MissileStats_;
 
                 UpdateVelocity();
             }
