@@ -237,7 +237,7 @@ namespace _800mm_tracking
         private void OnMissileAdded(IMyMissile missile)
         {
             PhoenixMissileDef missileDef;
-            if (MissileStats.TryGetValue("Ace_800mmTorpedoStrike", out missileDef) && missileDef != null)
+            if (MissileStats.TryGetValue(missile.AmmoDefinition.Id.SubtypeName, out missileDef) && missileDef != null)
             {
                 missile.Synchronized = true;
                 missileGuiders.Add(missile.EntityId, new MissileGuider(missile, missileDef));
