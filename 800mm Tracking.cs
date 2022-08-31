@@ -31,9 +31,8 @@ namespace _800mm_tracking
             { "Ace_800mmTorpedoStrike", new PhoenixMissileDef("Ace_800mmTorpedoStrike", 1000, 60, 0.2f) },
             */
 
-            { "Ace_800mmTorpedoStrike", new PhoenixMissileDef("Ace_800mmTorpedoStrike", 1000, 60, 0.2f) },
-            { "Ace_220mmBurstMissile_HV", new PhoenixMissileDef("Ace_220mmBurstMissile_HV", 50, 60, 1f) },
-            
+            { "Ace_220mmBurstMissile_Guided", new PhoenixMissileDef("Ace_220mmBurstMissile_Guided", 100, 3600, 0.5f) },
+
         };
 
         //The missile Class definition
@@ -109,17 +108,17 @@ namespace _800mm_tracking
                     TimeWithoutTarget = 0;
                 }
 
-                if (TimeWithoutTarget == MissileStats.MissileLifeTime) 
+                if (TimeWithoutTarget == MissileStats.MissileLifeTime)
                 {
                     missile.MaxTrajectory = 1;
                     missile.DoDamage(1, MyStringHash.NullOrEmpty, true, null, 0, 0, true);
                 }
-                   
+
             }
 
             public void UpdateTarget()
             {
-                
+
                 /* Adding Bounding Sphere infront of projectile */
                 Vector3D posAhead = missile.WorldMatrix.Translation + missile.WorldMatrix.Forward * (MissileStats.MissileTrackRadius); //Thanks to Digi#9441 on keen's discord for this formula.
                 BoundingSphereD TargetingSphere = new BoundingSphereD(posAhead, MissileStats.MissileTrackRadius);
@@ -130,12 +129,12 @@ namespace _800mm_tracking
 
 
                 List<IMyEntity> HostileInRadius = new List<IMyEntity>(); //Holds all hostile grids in the sphere
-                
+
                 foreach (var entity in inradius) // finds cubeblocks and if it detects an enemy, adds them to a list of hostiles in range
                 {
                     if (entity != null) // anti error
                     {
-                        
+
                         if (entity is MyCubeGrid)  // detects if entity is cubeblock
                         {
                             MyCubeGrid gridNearby = entity as MyCubeGrid; // cast IMyEntity into MyCubeGrid
@@ -174,11 +173,11 @@ namespace _800mm_tracking
                 {
                     target = closestEnt;
                     HostileInRadius.Clear();
-                }                
+                }
             } //End public void UpdateTarget()
 
             public void UpdateVelocity()
-            {   
+            {
                 MyMissileAmmoDefinition ammo = (MyMissileAmmoDefinition)missile.AmmoDefinition;
                 float speed = Math.Min(ammo.MissileInitialSpeed + ammo.MissileAcceleration * time, ammo.DesiredSpeed);
                 velocity = direction * speed;
@@ -198,7 +197,7 @@ namespace _800mm_tracking
                     rotationAxis.Normalize();
 
                     MatrixD rotationMatrix = MatrixD.CreateFromQuaternion(Quaternion.CreateFromAxisAngle(rotationAxis, MathHelper.ToRadians(MissileStats.MissileTurnSpeed)));
-                    
+
                     direction = Vector3.Transform(direction, rotationMatrix);
                     direction.Normalize();
                     target = null;
