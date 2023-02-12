@@ -21,12 +21,10 @@ namespace _800mm_tracking
             /*
             Change the things with *** around them to what it says inside.
             In order to add numbers < 1 you must put an f behind it. I dont know why you just do.
-
             { "***Missile SubtypeID***" , new PhoenixMissileDef("***Missile SubtypeID***", ***Track Radius*** , ***MissileLifeTime***, ***MissileTurnSpeed***) },
             Track Radius: Will set the sphere that the missile searches inside. Keep in mind that the real range of tracking is the diameter of the sphere and not the radius.
             MissileLifeTime: The ammount of time the missile will be allowed to live without aquireing a target.
             MissileTurnSpeed: This will set how fast the missile is able to turn to face a target. RECOMENDED TO KEEP THIS UNDER 1 AS THIS WILL BE UPDATED 60 TIMES IN A SECOND
-
             Example of correctly setup missile.
             { "Ace_800mmTorpedoStrike", new PhoenixMissileDef("Ace_800mmTorpedoStrike", 1000, 60, 0.2f) },
             */
@@ -71,7 +69,7 @@ namespace _800mm_tracking
             Vector3 direction = Vector3.Zero;
             Vector3 velocity = Vector3.Zero;
             Vector3 position = Vector3.Zero;
-
+            MyLog.Default.WriteLine("MissileGuider Started");
 
             public MissileGuider(IMyMissile missile, PhoenixMissileDef MissileStats_)
             {
@@ -89,6 +87,8 @@ namespace _800mm_tracking
             /* Main updating of the missile */
             public void Update()
             {
+                MyAPIGateway.Utilities.ShowMessage("Missile guide Update Start");
+
                 UpdateTarget();
 
                 UpdateDirectionNoPrediction();
@@ -96,6 +96,8 @@ namespace _800mm_tracking
                 UpdateVelocity();
 
                 UpdateTransform();
+
+                
 
                 time += ticktime;
 
@@ -110,6 +112,7 @@ namespace _800mm_tracking
 
                 if (TimeWithoutTarget == MissileStats.MissileLifeTime)
                 {
+                    MyAPIGateway.Utilities.ShowMessage("Guided missile out of life time: Deleating");
                     missile.MaxTrajectory = 1;
                     missile.DoDamage(1, MyStringHash.NullOrEmpty, true, null, 0, 0, true);
                 }
@@ -118,6 +121,7 @@ namespace _800mm_tracking
 
             public void UpdateTarget()
             {
+                MyAPIGateway.Utilities.ShowMessage("Updating target");
 
                 /* Adding Bounding Sphere infront of projectile */
                 Vector3D posAhead = missile.WorldMatrix.Translation + missile.WorldMatrix.Forward * (MissileStats.MissileTrackRadius); //Thanks to Digi#9441 on keen's discord for this formula.
@@ -174,6 +178,8 @@ namespace _800mm_tracking
                     target = closestEnt;
                     HostileInRadius.Clear();
                 }
+
+                MyAPIGateway.Utilities.ShowMessage("Update target End");
             } //End public void UpdateTarget()
 
             public void UpdateVelocity()
@@ -188,6 +194,7 @@ namespace _800mm_tracking
 
             public void UpdateDirectionNoPrediction()
             {
+                MyAPIGateway.Utilities.ShowMessage("Update Direction");
                 if (target != null && !target.MarkedForClose)
                 {
                     Vector3 TargetDirection = target.WorldVolume.Center - missile.GetPosition();
@@ -202,10 +209,12 @@ namespace _800mm_tracking
                     direction.Normalize();
                     target = null;
                 }
+                MyAPIGateway.Utilities.ShowMessage("Update direction end");
             } //End public void UpdateDirectionNoPrediction()
 
             public void UpdateTransform()
             {
+                MyAPIGateway.Utilities.ShowMessage("update transform");
                 if (missile.Physics == null)
                 {
                     position = position + velocity * ticktime;
@@ -215,6 +224,7 @@ namespace _800mm_tracking
                 MatrixD worldMatrix = missile.WorldMatrix;
                 worldMatrix.Forward = direction;
                 missile.WorldMatrix = worldMatrix;
+                MyAPIGateway.Utilities.ShowMessage("Update transform end");
             } //End public void UpdateTransform() 
         } //End private class MissileGuider
 
@@ -235,9 +245,11 @@ namespace _800mm_tracking
 
         private void OnMissileAdded(IMyMissile missile)
         {
+            MyAPIGateway.Utilities.ShowMessage("Missile added");
             PhoenixMissileDef missileDef;
             if (MissileStats.TryGetValue(missile.AmmoDefinition.Id.SubtypeName, out missileDef) && missileDef != null)
             {
+                MyAPIGateway.Utilities.ShowMessage("Guided missile found");
                 missile.Synchronized = true;
                 missileGuiders.Add(missile.EntityId, new MissileGuider(missile, missileDef));
             }
@@ -246,7 +258,11 @@ namespace _800mm_tracking
         private void OnMissileRemoved(IMyMissile missile)
         {
             if (missileGuiders.ContainsKey(missile.EntityId))
+            {
+                MyAPIGateway.Utilities.ShowMessage("Guided missile removed");
                 missileGuiders.Remove(missile.EntityId);
+            }
+                
         }
 
         public override void UpdateBeforeSimulation()
